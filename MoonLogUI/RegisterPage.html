@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Diğer head içerikleri... -->
+    <link href="css/styles.css" rel="stylesheet" />
+    <script>
+        function registerUser(event) {
+            event.preventDefault(); // Sayfa yeniden yüklenmesini önle
+            var name = document.getElementById('inputName').value;
+            var surname = document.getElementById('inputSurname').value;
+            var email = document.getElementById('inputEmail').value;
+            var password = document.getElementById('inputPassword').value;
+            var confirmPassword = document.getElementById('inputConfirmPassword').value;
+
+            localStorage.setItem('email', email);
+            localStorage.setItem('name', name);
+            localStorage.setItem('surname', surname);
+            
+            // Şifrelerin eşleşip eşleşmediğini kontrol et
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            // Kullanıcı kayıt objesini oluştur
+            var userData = {
+                name: name,
+                surname: surname,
+                email: email,
+                password: password
+            };
+
+            setTimeout(() => {
+        fetch('https://localhost:7208/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            alert('Kayıt başarılı! Onay linki mailinize gönderilmiştir.');
+
+            // 5 saniye sonra kullanıcıyı giriş sayfasına yönlendir
+            setTimeout(() => {
+                window.location.href = 'loginPage.html';
+            }, 1000);
+
+            // 5 saniye içinde giriş sayfasına yönlendirileceğinizi belirten bir mesaj göster
+            setTimeout(() => {
+                alert('2 saniye içinde giriş sayfasına yönlendirileceksiniz.');
+            }, 0); // Hemen göstermek için 0 saniye bekleyin
+
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }, 5000); // 5 saniye bekleyin
+        }
+    </script>
+</head>
+<body>
+    <!-- Navbar ve diğer içerikler... -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#!">MoonLog</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link " href="MainPage.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="About.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="loginPage.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-placeholder="page" href="RegisterPage.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <header class="py-5 bg-light border-bottom mb-4">
+        <div class="container">
+            <div class="text-center my-5">
+                <h1 class="fw-bolder">Welcome to MoonLog</h1>
+                <p class="lead mb-0">Your dream Blog's</p>
+            </div>
+        </div>
+    </header>
+    <div class="container mt-5">
+        <form onsubmit="registerUser(event)">
+            <div class="mb-3">
+                <label for="inputName" class="form-label">Name</label>
+                <input type="text" class="form-control" id="inputName" required>
+            </div>
+            <div class="mb-3">
+                <label for="inputSurname" class="form-label">Surname</label>
+                <input type="text" class="form-control" id="inputSurname" required>
+            </div>
+            <div class="mb-3">
+                <label for="inputEmail" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="inputEmail" required>
+            </div>
+            <div class="mb-3">
+                <label for="inputPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="inputPassword" required>
+            </div>
+            <div class="mb-3">
+                <label for="inputConfirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="inputConfirmPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
+    <!-- Footer... -->
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; MoonLog 2023</p></div>
+    </footer>
+</body>
+<script src="nav.js"></script>
+
+</html>

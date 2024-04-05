@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makale Ekle - MoonLog</title>
+    <link href="css/styles.css" rel="stylesheet" />
+    <!-- Bootstrap CSS linki ekleme -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar burada... -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#!">MoonLog</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="AddDocument.html">Makale Ekle</a> </li>
+                    </ul>
+                </div>
+        </div>
+    </nav>
+    <header class="py-5 bg-light border-bottom mb-4">
+        <div class="container">
+            <div class="text-center my-5">
+                <h1 class="fw-bolder">Makale Ekle</h1>
+                <p class="lead mb-0">MoonLog'a yeni bir makale ekleyin</p>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        Yeni Makale
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="articleTitle" class="form-label">Başlık</label>
+                                <input type="text" class="form-control" id="articleTitle" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="articleContent" class="form-label">İçerik</label>
+                                <textarea class="form-control" id="articleContent" rows="5" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="averageReadingTime" class="form-label">Average Reading Time</label>
+                                <input type="number" class="form-control" id="articleAverageReadingTime" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="photoOptions" class="form-label">Makale Fotoğrafı Seç</label>
+                                <div id="photoOptions" class="d-flex flex-wrap">
+                                    <!-- JavaScript ile fotoğraf seçenekleri buraya eklenecek -->
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="articleCategory" class="form-label">Kategori</label>
+                                <select class="form-control" id="articleCategory" required>
+                                <option selected>Kategori Seçin</option>
+                                <option value="1">Space</option>
+                                <option value="6">Life</option>
+                                <option value="4">Career</option>
+                                <option value="2">Technology</option>
+                                <option value="3">Sport</option>
+                                <option value="5">Entertainment</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Makale Ekle</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer burada... -->
+
+    <!-- Opsiyonel JavaScript; Bootstrap JS, Popper.js, ve jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; MoonLog 2023</p></div>
+    </footer>
+</body>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const photoOptions = document.getElementById('photoOptions');
+    let selectedPhotoUrl = ''; // Seçilen fotoğrafın URL'sini saklamak için
+
+    // Örnek fotoğraf URL'leri ve gösterilecekler
+    const photos = [
+        'space.jpg',
+        "life.png", 
+        "career.png",
+        "tech.png",
+        "sport.jpg",
+        "ent.png",
+        
+        // Daha fazla fotoğraf URL'si ekleyebilirsiniz
+    ];
+
+    // Fotoğraf seçeneklerini göster
+    photos.forEach((url, index) => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = `Fotoğraf ${index + 1}`;
+        img.className = 'thumbnail mr-2'; // Bootstrap sınıfları ve küçük resim sınıfı
+        img.style.width = '50px'; // Küçük resim boyutu
+        img.style.height = '50px';
+        img.style.objectFit = 'cover';
+        img.style.cursor = 'pointer';
+        img.style.margin = '5px';
+        img.addEventListener('click', function() {
+            // Seçilen fotoğrafı işaretle
+            if (selectedPhotoUrl === url) {
+                img.style.border = ''; // Eğer tekrar aynı fotoğrafa tıklanırsa seçimi kaldır
+                selectedPhotoUrl = ''; // Seçimi sıfırla
+            } else {
+                // Önceki seçimleri temizle
+                document.querySelectorAll('#photoOptions img').forEach(i => i.style.border = '');
+                img.style.border = '2px solid blue'; // Seçilen fotoğrafa bir border ekle
+                selectedPhotoUrl = url; // Seçilen fotoğrafın URL'sini sakla
+            }
+        });
+        photoOptions.appendChild(img);
+        
+    });
+    const userEmail = localStorage.getItem('email');
+
+        // API endpoint URL'inizi buraya girin
+        const apiUrl = 'http://localhost:3000/api/user/userdetails';
+
+        // E-posta adresini kullanarak kullanıcı ID'si için API'ye istek gönder
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: userEmail })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json(); // Yanıtı JSON olarak dönüştür
+        })
+        .then(data => {
+            localStorage.setItem('userId', data.Id);
+            // Kullanıcı ID'sini kullanma veya saklama işlemleri burada yapılabilir
+        })
+        .catch(error => {
+            console.error('Kullanıcı ID alınırken hata oluştu:', error);
+        });
+    
+    
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Formun varsayılan gönderimini engelle
+
+        // Formdan verileri al
+        const title = document.getElementById('articleTitle').value;
+        const content = document.getElementById('articleContent').value;
+        // Kategori ID'si için varsayılan bir değer, gerçekte bu değeri formdan veya başka bir kaynaktan almanız gerekebilir
+        const categoryId = parseInt(document.getElementById('articleCategory').value, 10);
+        const averageReadingTime = parseFloat(document.getElementById('articleAverageReadingTime').value);
+        const datePublished = new Date().toISOString(); // ISO formatında tarih
+        
+        // Author bilgileri, bu bilgileri bir formdan veya oturumdan alabilirsiniz
+         // Dosya için bir Object URL oluştur ve localStorage'a kaydet
+        
+        const author = {
+            name: localStorage.getItem('name'),
+            surname: localStorage.getItem('surname'),
+            email: localStorage.getItem('email'),
+        };
+
+
+        // Form verilerini ve Author objesini içeren JSON objesi olarak hazırla
+        const articleData = {
+            title,
+            content,
+            datePublished,
+            likedCount: 0, // Sabit bir değer
+            averageReadingTime,
+            authorId: localStorage.getItem('userId') ,// Gerçek uygulamada dinamik bir değer olmalı
+            categoryId,
+            comments: [], // Başlangıçta boş bir dizi
+            Author: author
+        };
+        
+        // API'ye POST isteği gönder
+        fetch('http://localhost:3000/api/Blog', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(articleData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            localStorage.setItem('title', title);
+            localStorage.setItem('uploadedFileUrl', selectedPhotoUrl);
+            alert('Makale başarıyla eklendi!');
+            window.location.href = 'MainPage.html';
+            // Formu temizle veya kullanıcıyı başka bir sayfaya yönlendir
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+
+            alert('Makale eklenirken bir hata oluştu.');
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+    updateNavbar();
+
+    function updateNavbar() {
+        const email = localStorage.getItem('email');
+        const navbarUl = document.querySelector('#navbarSupportedContent ul');
+        const loginNavItem = document.querySelector('.nav-item a[href="loginPage.html"]');
+        const registerNavItem = document.querySelector('.nav-item a[href="RegisterPage.html"]');
+        
+        // Eğer localStorage'da email varsa, kullanıcı giriş yapmış demektir
+        if (email) {
+            loginNavItem?.parentElement.remove(); // Giriş yap linkini sil
+            registerNavItem?.parentElement.remove(); // Kayıt ol linkini sil
+
+            // Hesabım menü öğesini ekle
+            navbarUl.innerHTML += `<li class="nav-item"><a class="nav-link" href="ProfileSetting.html">Hesabım</a></li>`;
+
+            // Makale Ekle menü öğesini ekle
+            navbarUl.innerHTML += `<li class="nav-item"><a class="nav-link" href="AddDocument.html">Makale Ekle</a></li>`;
+
+            // Çıkış Yap menü öğesini ekle
+            navbarUl.innerHTML += `<li class="nav-item"><a class="nav-link" href="#" onclick="logout()">Çıkış Yap</a></li>`;
+        }
+    }
+
+    // Çıkış yapma işlemi
+    function logout() {
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('email');
+        window.location.href = 'loginPage.html'; // Kullanıcıyı giriş sayfasına yönlendir
+    }
+
+    window.logout = logout; // logout fonksiyonunu global alana taşı
+});
+
+});
+</script>
+
+</html>

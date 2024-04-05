@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Blog details </title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <!-- Navbar Here -->
+    <!-- navbar.html -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#!">MoonLog</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="MainPage.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="About.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="loginPage.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="RegisterPage.html">Kayıt Ol</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page content-->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Post content-->
+                <article>
+                    <!-- Post header-->
+                    <header class="mb-4">
+                        <h1 class="fw-bolder mb-1" id="postTitle">Loading...</h1>
+                        <div class="text-muted fst-italic mb-2" id="postMeta">Loading...</div>
+                    </header>
+                    <!-- Preview image figure-->
+                    <figure class="mb-4"><img class="img-fluid rounded" src="" alt="..." id="postImage"/></figure>
+                    <!-- Post content-->
+                    <section class="mb-5" id="postContent">
+                        <!-- Content will be loaded here -->
+                    </section>
+                </article>
+                <!-- Comments section-->
+                <!-- Your comments section here -->
+            </div>
+            <!-- Side widgets-->
+            <!-- Your widgets here -->
+        </div>
+    </div>
+
+    <!-- Footer Here -->
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; MoonLog 2023</p></div>
+    </footer>
+
+    <!-- Bootstrap core JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS -->
+    <script src="js/scripts.js"></script>
+    <script src="nav.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // URL'den blogPostId'yi çıkar
+            const urlParams = new URLSearchParams(window.location.search);
+            const blogPostId = urlParams.get('blogPostId');
+        
+            // localStorage'dan makale başlığını ve fotoğraf URL'sini al
+            const savedTitle = localStorage.getItem('articleTitle');
+            const uploadedImageUrl = localStorage.getItem('uploadedFileUrl');
+        
+            // Blog post detaylarını blogPostId kullanarak getir
+            fetch(`http://localhost:3000/api/Blog/${blogPostId}`) // Gerçek API endpointiniz ile değiştirin
+                .then(response => response.json())
+                .then(data => {
+                    // Blog post detaylarını göster
+                    document.getElementById('postTitle').textContent = data.title;
+                    document.getElementById('postMeta').textContent = `Posted on ${new Date(data.datePublished).toLocaleDateString()} by ${data.author.name + data.author.surname}`;
+        
+                    // Eğer localStorage'daki kaydedilen başlık bu post ile uyuşuyorsa ve bir fotoğraf URL'si varsa,
+                    // kaydedilen fotoğrafı kullan; değilse varsayılan bir fotoğrafı kullan
+                    if (savedTitle === data.title && uploadedImageUrl) {
+                        document.getElementById('postImage').setAttribute('src', uploadedImageUrl);
+                    } else {
+                        // Varsayılan fotoğraf URL'si
+                        document.getElementById('postImage').setAttribute('src', 'defaults.png'); // Varsayılan fotoğrafınızın URL'si
+                    }
+        
+                    document.getElementById('postContent').innerHTML = data.content;
+                    // İhtiyacınıza göre kategoriler veya yorumlar gibi ek elementleri dinamik olarak değiştirebilirsiniz
+                })
+                .catch(error => console.error('Error loading blog post:', error));
+        });
+        </script>
+        
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesabım - MoonLog</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#!">MoonLog</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="MainPage.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="About.html">About</a></li>
+                    </ul>
+                </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div class="card" id="userInfoCard">
+            <div class="card-body">
+                <h5 class="card-title">Kullanıcı Bilgileri</h5>
+                <p class="card-text">İsim: <span id="userFirstName"></span></p>
+                <p class="card-text">Soyisim: <span id="userLastName"></span></p>
+                <p class="card-text">E-posta: <span id="userEmail"></span></p>
+                <p class="card-text">Bio: <span id="userbio"></span></p>
+
+            </div>
+        </div>
+    </div>
+    <div class="container mt-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Update User Information</h5>
+                <form id="updateUserForm">
+                    <div class="form-group">
+                        <label for="updateFirstName">First Name</label>
+                        <input type="text" class="form-control" id="updateFirstName" placeholder="Enter new first name">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateLastName">Last Name</label>
+                        <input type="text" class="form-control" id="updateLastName" placeholder="Enter new last name">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateEmail">Email address</label>
+                        <input type="email" class="form-control" id="updateEmail" placeholder="Enter new email">
+                    </div>
+                    <div class="form-group">
+                        <label for="updatebio">Email address</label>
+                        <input type="text" class="form-control" id="updatebio" placeholder="Enter your Biography">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Hesap Ayarları</h5>
+                <!-- Hesap Silme Butonu -->
+                <button id="deleteAccountBtn" class="btn btn-danger">Hesap Sil</button>
+            </div>
+        </div>
+    </div>
+    
+    
+
+    <!-- Bootstrap JS ve bağımlılıkları -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Kullanıcı Bilgilerini Çekme Script'i -->
+</body>
+<script src="nav.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const userToken = localStorage.getItem('userToken');
+
+    const headers = userToken ? { 
+        'Authorization': 'Bearer ' + userToken,
+        'Content-Type': 'application/json'
+    } : { 
+        'Content-Type': 'application/json'
+    };
+
+    fetch('http://localhost:3000/api/Blog/', { headers: headers })
+        .then(response => {
+            if (!response.ok) {
+                console.log(response);
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const email = localStorage.getItem('email');
+            const userData = data.find(post => post.author.email === email);
+            if (userData) {
+                // Assuming userData.author contains user information
+                if (userData.author) {
+                    localStorage.setItem('userId',userData.author.id);
+                    document.getElementById('userFirstName').textContent = userData.author.name;
+                    document.getElementById('userLastName').textContent = userData.author.surname;
+                    document.getElementById('userEmail').textContent = userData.author.email;
+                    document.getElementById('userbio').textContent = userData.author.bio;
+                } else {
+                    console.error("Kullanıcı bilgileri alınamadı.");
+                }
+            } else {
+                console.error("Kullanıcıya ait gönderi bulunamadı.");
+            }
+        })
+        .catch(error => console.error('Error:', error));
+});
+ // Form submission event listener for updating user information
+ document.getElementById('updateUserForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent the default form submission
+
+    const userToken = localStorage.getItem('userToken');
+    const userId = localStorage.getItem('userId'); // userId'yi localStorage'dan al
+    const updatedFirstName = document.getElementById('updateFirstName').value;
+    const updatedLastName = document.getElementById('updateLastName').value;
+    const updatedEmail = document.getElementById('updateEmail').value;
+    const updatedbio = document.getElementById('updatebio').value;
+
+
+    fetch('http://localhost:3000/update-user', { // URL'yi güncelleyin
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + userToken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            UserId: userId, // userId'yi istek gövdesine ekleyin
+            Name: updatedFirstName,
+            Surname: updatedLastName,
+            Email: updatedEmail,
+            bio: updatedbio
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+        localStorage.setItem('email', updatedEmail);
+        alert("User information updated successfully.");
+        location.reload(); // Reload the page to refresh user info
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+});
+document.getElementById('deleteAccountBtn').addEventListener('click', function() {
+    const confirmation = confirm("Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.");
+    
+    if (confirmation) {
+        const userToken = localStorage.getItem('userToken');
+        const userEmail = localStorage.getItem('email'); // Kullanıcının e-posta adresini localStorage'dan al
+
+        // Hesap silme isteğini gönder
+        fetch('http://localhost:3000/delete-user', { // URL'yi güncelleyin
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + userToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Email: userEmail // Kullanıcının e-posta adresini istek gövdesine ekleyin
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            alert("Hesabınız başarıyla silindi.");
+            localStorage.clear(); // Kullanıcı bilgilerini temizle
+            window.location.href = 'loginPage.html';// Ana sayfaya yönlendir
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert("Hesap silinirken bir hata oluştu.");
+        });
+    }
+});
+
+
+</script>
+
+
+</html>
